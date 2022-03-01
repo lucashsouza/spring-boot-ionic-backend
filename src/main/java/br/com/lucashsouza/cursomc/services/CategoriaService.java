@@ -37,9 +37,9 @@ public class CategoriaService {
 		return repository.findAll(pageRequest);
 	}
 	
-	public Categoria insert(Categoria categoria) {
-		categoria.setId(null);
-		return repository.save(categoria);
+	public Categoria insert(Categoria obj) {
+		obj.setId(null);
+		return repository.save(obj);
 	}
 
 	public Categoria update(Categoria obj) {
