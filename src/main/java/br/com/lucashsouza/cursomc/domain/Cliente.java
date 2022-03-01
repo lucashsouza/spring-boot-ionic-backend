@@ -1,23 +1,11 @@
 package br.com.lucashsouza.cursomc.domain;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-
+import br.com.lucashsouza.cursomc.domain.enums.TipoCliente;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import br.com.lucashsouza.cursomc.domain.enums.TipoCliente;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.*;
 
 @Entity
 public class Cliente implements Serializable {
@@ -47,13 +35,13 @@ public class Cliente implements Serializable {
 	public Cliente() {
 	}
 
-	public Cliente(Integer id, String nome, String email, String cpfOuCnpj, TipoCliente tipoCliente) {
+	public Cliente(Integer id, String nome, String email, String cpfOuCnpj, TipoCliente tipo) {
 		super();
 		this.id = id;
 		this.nome = nome;
 		this.email = email;
 		this.cpfOuCnpj = cpfOuCnpj;
-		this.tipo = tipoCliente.getCod();
+		this.tipo = tipo != null ? tipo.getCod() : null;
 	}
 
 	public Integer getId() {

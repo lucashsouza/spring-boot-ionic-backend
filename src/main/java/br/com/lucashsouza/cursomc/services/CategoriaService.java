@@ -21,15 +21,20 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaRepository repository;
 
-	public List<Categoria> findAll() {
-		return repository.findAll();
-	}
-
 	public Categoria find(Integer id) {
 		Optional<Categoria> categoria = repository.findById(id);
 		return categoria.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado! " +
 			      "ID: " + id + " " +
 			      "Tipo: " + Categoria.class.getName()));
+	}
+
+	public List<Categoria> findAll() {
+		return repository.findAll();
+	}
+
+	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String direction, String orderBy) {
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+		return repository.findAll(pageRequest);
 	}
 	
 	public Categoria insert(Categoria categoria) {
@@ -49,11 +54,6 @@ public class CategoriaService {
 		} catch (DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos.");
 		}
-	}
-
-	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String direction, String orderBy) {
-		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-		return repository.findAll(pageRequest);
 	}
 
 	public Categoria fromDTO(CategoriaDTO objDTO) {
