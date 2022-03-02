@@ -96,7 +96,7 @@ public class CursomcApplication implements CommandLineRunner {
 		categoria4.getProdutos().addAll(Arrays.asList(produto1, produto2, produto3, produto7));
 		categoria5.getProdutos().addAll(Arrays.asList(produto8));
 		categoria6.getProdutos().addAll(Arrays.asList(produto9, produto10));
-		categoria6.getProdutos().addAll(Arrays.asList(produto11));
+		categoria7.getProdutos().addAll(Arrays.asList(produto11));
 
 		produto1.getCategorias().addAll(Arrays.asList(categoria1, categoria4));
 		produto2.getCategorias().addAll(Arrays.asList(categoria1, categoria2, categoria4));
