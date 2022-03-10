@@ -2,6 +2,7 @@ package br.com.lucashsouza.cursomc.services;
 
 import br.com.lucashsouza.cursomc.domain.*;
 import br.com.lucashsouza.cursomc.domain.enums.EstadoPagamento;
+import br.com.lucashsouza.cursomc.domain.enums.Perfil;
 import br.com.lucashsouza.cursomc.domain.enums.TipoCliente;
 import br.com.lucashsouza.cursomc.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,16 +107,21 @@ public class DBService {
 
         // Clientes, Telefones (fraca tipagem) e Endereco
         Cliente cliente1 = new Cliente(null, "Maria Silva", "maria@gmail.com", "36378912377", TipoCliente.PESSOAFISICA, passwordEncoder.encode("123"));
-
         cliente1.getTelefones().addAll(Arrays.asList("27363323", "93838393"));
+
+        Cliente cliente2 = new Cliente(null, "Ana Costa", "lhenriquesouza00@gmail.com", "54483957082", TipoCliente.PESSOAFISICA, passwordEncoder.encode("123"));
+        cliente2.getTelefones().addAll(Arrays.asList("1921325067", "4921316864"));
+        cliente2.addPerfil(Perfil.ADMIN);
 
         Endereco endereco1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38220834", cliente1, cidade1);
         Endereco endereco2 = new Endereco(null, "Avenida Matos", "105", "Sala 800", "Centro", "38777012", cliente1, cidade2);
+        Endereco endereco3 = new Endereco(null, "Avenida Floriano", "2106", null, "Centro", "281777012", cliente2, cidade2);
 
         cliente1.getEnderecos().addAll(Arrays.asList(endereco1, endereco2));
+        cliente2.getEnderecos().addAll(Arrays.asList(endereco3));
 
-        clienteRepository.saveAll(Arrays.asList(cliente1));
-        enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
+        clienteRepository.saveAll(Arrays.asList(cliente1, cliente2));
+        enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2, endereco3));
 
         // Pedidos
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
