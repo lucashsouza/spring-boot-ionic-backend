@@ -1,5 +1,6 @@
 package br.com.lucashsouza.cursomc.services;
 
+import br.com.lucashsouza.cursomc.domain.Cliente;
 import br.com.lucashsouza.cursomc.domain.ItemPedido;
 import br.com.lucashsouza.cursomc.domain.PagamentoComBoleto;
 import br.com.lucashsouza.cursomc.domain.Pedido;
@@ -7,8 +8,13 @@ import br.com.lucashsouza.cursomc.domain.enums.EstadoPagamento;
 import br.com.lucashsouza.cursomc.repositories.ItemPedidoRepository;
 import br.com.lucashsouza.cursomc.repositories.PagamentoRepository;
 import br.com.lucashsouza.cursomc.repositories.PedidoRepository;
+import br.com.lucashsouza.cursomc.security.UserSpringSecurity;
+import br.com.lucashsouza.cursomc.services.exceptions.AuthorizationException;
 import br.com.lucashsouza.cursomc.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -40,11 +46,19 @@ public class PedidoService {
 	private ItemPedidoRepository itemPedidoRepository;
 
 	public Pedido find(Integer id) {
+		Optional<Pedido> obj = pedidoRepository.findById(id);
+		return obj.orElseThrow(() -> new ObjectNotFoundException(
+				"Objeto não encontrado! Id: " + id + ", Tipo: " + Pedido.class.getName()));
+	}
 
-		Optional<Pedido> categoria = pedidoRepository.findById(id);
-		return categoria.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado! " +
-			      "ID: " + id + " " +
-			      "Tipo: " + Pedido.class.getName()));
+	public Page<Pedido> findPage(Integer page, Integer linesPerPage, String direction, String orderBy) {
+		UserSpringSecurity user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
+		Cliente cliente = clienteService.find(user.getId());
+		return pedidoRepository.findByCliente(cliente, pageRequest);
 	}
 
 	@Transactional
