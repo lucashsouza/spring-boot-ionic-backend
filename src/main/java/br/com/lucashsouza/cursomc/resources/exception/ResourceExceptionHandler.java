@@ -1,8 +1,8 @@
 package br.com.lucashsouza.cursomc.resources.exception;
 
-import javax.servlet.http.HttpServletRequest;
-
+import br.com.lucashsouza.cursomc.services.exceptions.AuthorizationException;
 import br.com.lucashsouza.cursomc.services.exceptions.DataIntegrityException;
+import br.com.lucashsouza.cursomc.services.exceptions.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import br.com.lucashsouza.cursomc.services.exceptions.ObjectNotFoundException;
+import javax.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -37,5 +37,12 @@ public class ResourceExceptionHandler {
 			error.addError(fieldError.getField(), fieldError.getDefaultMessage());
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+	}
+
+	@ExceptionHandler(AuthorizationException.class)
+	public ResponseEntity<StandardError> authorization(AuthorizationException exception, HttpServletRequest request) {
+
+		StandardError error = new StandardError(HttpStatus.FORBIDDEN.value(), exception.getMessage(), System.currentTimeMillis());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
 	}
 }

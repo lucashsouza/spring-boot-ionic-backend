@@ -3,11 +3,14 @@ package br.com.lucashsouza.cursomc.services;
 import br.com.lucashsouza.cursomc.domain.Cidade;
 import br.com.lucashsouza.cursomc.domain.Cliente;
 import br.com.lucashsouza.cursomc.domain.Endereco;
+import br.com.lucashsouza.cursomc.domain.enums.Perfil;
 import br.com.lucashsouza.cursomc.domain.enums.TipoCliente;
 import br.com.lucashsouza.cursomc.dto.ClienteNewDTO;
 import br.com.lucashsouza.cursomc.repositories.ClienteRepository;
 import br.com.lucashsouza.cursomc.repositories.EnderecoRepository;
 import br.com.lucashsouza.cursomc.resources.ClienteDTO;
+import br.com.lucashsouza.cursomc.security.UserSpringSecurity;
+import br.com.lucashsouza.cursomc.services.exceptions.AuthorizationException;
 import br.com.lucashsouza.cursomc.services.exceptions.DataIntegrityException;
 import br.com.lucashsouza.cursomc.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,13 @@ public class ClienteService {
 	private EnderecoRepository enderecoRepository;
 
 	public Cliente find(Integer id) {
+
+		UserSpringSecurity user = UserService.authenticated();
+		if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+			throw new AuthorizationException("Acesso negado");
+		}
+
+
 		Optional<Cliente> cliente = clienteRepository.findById(id);
 		return cliente.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado! " +
 				"ID: " + id + " " +
