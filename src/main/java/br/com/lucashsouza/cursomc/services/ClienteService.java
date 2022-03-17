@@ -43,7 +43,6 @@ public class ClienteService {
 	private S3Service s3Service;
 
 	public Cliente find(Integer id) {
-
 		UserSpringSecurity user = UserService.authenticated();
 		if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
 			throw new AuthorizationException("Acesso negado");
@@ -89,7 +88,20 @@ public class ClienteService {
 	}
 
 	public URI uploadProfilePicture(MultipartFile multipartFile) {
-		return s3Service.uploadFile(multipartFile);
+		UserSpringSecurity user = UserService.authenticated();
+		if (user == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+
+		URI uri = s3Service.uploadFile(multipartFile);
+
+		Optional<Cliente> cliente = clienteRepository.findById(user.getId());
+		if (cliente.isPresent()) {
+			cliente.get().setImageUrl(uri.toString());
+			clienteRepository.save(cliente.get());
+		}
+
+		return uri;
 	}
 
 	private void updateDate(Cliente newObj, Cliente obj) {
